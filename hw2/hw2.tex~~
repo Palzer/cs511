@@ -1,0 +1,82 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{amsfonts}
+\usepackage{fullpage}
+
+\begin{document}
+
+\textbf{CSCI 511 Analysis of Algorithms II \hfill Winter 2013 - Johnson}
+
+\begin{center}
+\textbf{David Palzer \\ Homework 2}
+\end{center}
+
+\begin{enumerate}
+
+\item (Exercise 22.1-7 from the text) The $incidence$ $matrix$ of a directed graph, G = (V,E), with no self-loops is a $|V|x|E|$ matrix B = [$b_{ij}$] such that
+
+	\begin{displaymath}
+		b_{ij} = \left\{
+			\begin{array}{lr}
+				-1 $, if edge j leaves vertice i$\\
+				1  $, if edge j enters vertice i$\\
+				0  $, otherwise$
+			\end{array}
+		\right.
+	\end{displaymath}
+			
+	Let $B^T$ denote the transpose of B. That is, $[B^T]_{ij} = b_{ji}$. Let C = [$c_{ij}$] = $BB^T$. What is the meaning of each $c_{ij}$, in terms of egdes in the original G.\\
+	
+	
+\textbf{Solution:} Given a matrix B and its tranpose B$^T$, and C = BB$^T$, we know that C is symmetrical as it is known that a matrix times its tranpose is symmetrical.\\\\
+B = $\left| \begin{array}{cccccc} -1 & 1 & 0 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 & 1 & 0 \\0 & -1 & 1 & 0 & 0 & 0 \\0 & 0 & -1 & -1 & 0 & 1 \\ 0 & 0 & 0 & 0 & -1 & -1 \end{array} \right|$,
+$B^T$ = $\left| \begin{array}{ccccc} -1 & 1 & 0 & 0 & 0 \\ 1 & 0 & -1 & 0 & 0 \\0 & 0 & 1 & -1 & 0 \\0 & 1 & 0 & -1 & 0\\0 & 1 & 0 & 0 & -1\\0 & 0 & 0 & 1 & -1 \end{array} \right|$,\\
+C = $BB^T$= $\left| \begin{array}{ccccc} 2 & -1 & -1 & 0 & 0 \\ -1 & 3 & 0 & -1 & -1 \\ -1 & 0 & 2 & -1 & 0 \\ 0 & -1 & -1 & 3 & -1 \\ 0 & -1 & 0 & -1 & 2 \end{array} \right|$
+\\\\Looking at C we notice that the elements $C_{ii}$ are equal to the number of edges that interact with vertice $i$. $C_{ij}, j \ne i$ is negative one if there is an interaction by an edge between vertices $i$ and $j$ in either direction.
+
+\item Let A = $[a_{ij}]$ be the adjacency matric of a directed graph G= (V,E) with no self-loops. Construct and algorithm with asymptotic time complexity $\Theta(|V|)$ that finds a vertex with the in-degree $|V| - 1$ and out-degree zero, if such a vertex exists. If the vertex does not exist, the algorithm should output a statement to that effect.\\
+
+
+\textbf{Solution:} Let A be an adjacency matrix:
+\begin{verbatim}
+int guess = 0;
+for (i = 1; i < |A|; i++)
+    if A[guess][i] == 1
+        guess = i;
+for (i = 0; i < |A|; i++)
+    if i != guess && (A[guess][i] == 1||A[i][guess] == 0)
+        print "There is not sink state for this graph"
+        return false;
+print "Vertice [guess] is the sink state for this graph"
+return true;
+\end{verbatim}
+
+Let us use an loop invariant to prove the correctness of this algorithm.
+
+We shall look at the first for loop. The variable, guess, holds our current guess for the sink state of the graph based on elimination of states through the loop.
+
+Initialization: It is true before the first iteration of the loop.
+
+Maintenance: If it is true before the iteration of the loop, it remains true before the next iteration.
+
+Termination: When the loop terminates, the invariant gives us a useful property thats helps show that the algorithm is correct.
+
+Initialization: Before the first iteration we can see that no states have been eliminated and zero is our current guess.
+
+Maintenance: When we enter the loop we compare A[guess][i] to one. From here we can figure out a couple things, either that the state i is not a sink state or that the guess state is not a sink state. If A[guess][i] is equal to one then we know that the current guess is not valid as it has an edge leaving it going to i meaning that it has an out-degree larger than zero so then we set the guess equal to i. If A[guess][i] is not equal to one then that means that the state i does not have a potential in-degree of $|A|$ - 1 so is not a valid candidate and that our guess state still has a potential out-degree of zero. This means that for each loop we eliminate one state, either the current i or the current guess, and that at the end of the loop guess is a valid candidate for a sink state.
+
+Termination: After the loop we know that we have the only valid candidate for the sink state of the graph as we have looped $|A|$ - 1 times and eliminated one state each time resulting in one state left.
+
+The second for loop of the algorithm simply looks at each value in the column and row of our guess to make sure that it does not have any outgoing edges and that it has an incoming edge from every other vertice. This final test tells us whether or not our guess is a sink state or if it isnt then we know that the graph does not have a sink state.
+
+\item (Variation on Exercise 22.2-8 of the test) Consider a tree rooted at vertex $r$ as an undirected graph G = (V,E). For any two vertices u,v $\in$ V, let $\Sigma(u,v)$ denote the shortest-path distance from u to v. Define
+
+$D = max_{u,v\in V}\delta(u,v)$.
+
+Starting with an adjaceny list representation of G as a directed graph, construct a $\Theta(|V|)$ algorithm that computes D. Note that the input adjaceny list will only contain edges from a vertex to its childern in the tree; it will not contain the reverse edges, although these reverse edges are used in computing the $\delta(u,v)$ values.\\
+
+\textbf{Solution:} BFS = O(v + e) but v = e so O(2v) so O(v)
+Explain this( BFS from root, find longest distance, remember node. make undirected graph. BFS from earlier node. Longest distance is diameter.
+
+\end{enumerate}
+\end{document}

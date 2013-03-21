@@ -1,0 +1,194 @@
+/*-----------------------
+David Palzer
+CSCI 511
+February 26th, 2013
+------------------------*/
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <string>
+#include <fstream>
+#include <cstdlib>
+#include <limits>
+#include <math.h>
+#include <set>
+
+using namespace std;
+
+typedef struct {
+	float x;
+	float y;
+}vertex;
+
+class Comp
+{
+public:
+bool operator()(vertex s1, vertex s2)
+{
+if(s1.x < s2.x ){
+	return true;
+}
+else if (s1.x == s2.x){
+	if (s1.y < s2.y)
+		return true;
+	else
+		return false;
+}
+else{
+	return false;
+}
+}
+};
+
+typedef struct {
+	float min;
+	set<vertex,Comp> chord;
+}chords;
+
+
+
+void readinput(vector <vertex>* polygon);
+void outputpolygon(vector <vertex>* polygon);
+double weight(vertex* v1, vertex* v2, vertex* v3);
+double decompose(vector <vertex>* polygon,int i,int j);
+void initialize(int size);
+void displaychords(int i, int j);
+
+
+chords** array;
+set <vertex,Comp> pairs;
+int probnum = 0;
+
+int main(){
+	
+	float min;						//O(1)
+	
+	vector <vertex> polygon;		//O(1)
+	
+	readinput(&polygon);			//O(n)
+	
+	initialize(polygon.size());		//O(n^2)
+	
+	outputpolygon(&polygon);		//O(n)
+	
+	min = decompose(&polygon,1,polygon.size()-1);			//O(?????????????) O(n^2) subproblems
+	fprintf(stderr,"Minimum distance was %f, and chords are: \n",min);
+	displaychords(1,polygon.size()-1);
+
+}
+
+void displaychords(int i, int j){
+
+	for (set<vertex,Comp>::iterator it = array[i][j].chord.begin() ; it != array[i][j].chord.end(); ++it){
+	
+		fprintf(stderr,"%i, %i\n",(int)it->x,(int)it->y);
+	
+	}
+
+}
+
+void initialize(int size){
+
+	array = new chords*[size];
+		for (int i = 0; i < size; i++){
+			array[i] = new chords[size];
+		}
+		
+	for (int i = 0; i < size; i++){
+		for (int j = 0; j < size; j++){
+			array[i][j].min = numeric_limits<float>::infinity();
+		}
+	}
+
+}
+
+double decompose(vector <vertex>* polygon,int i, int j){
+
+	double min = numeric_limits<float>::infinity();		//O(1)
+	double curr;										//O(1)
+	int rightk;											//O(1)
+	
+	if (i == j){										//O(1) if t(i,i)
+		probnum++;
+		return 0;
+	}
+	else{
+		if (array[i][j].min < numeric_limits<float>::infinity()){	//O(1) if previously solved
+			//cerr << "this problem was previously solved\n";
+			return array[i][j].min;	
+		}
+		probnum++;
+		//fprintf(stderr,"working on problem i = %d, j = %d, #%i\n",i,j,probnum);
+		for (int k = i; k < j; k++){																									//O(n) loop
+			curr = decompose(polygon,i,k) + decompose(polygon,k+1,j) + weight(&polygon->at(i-1),&polygon->at(k),&polygon->at(j));		//O(n)
+			if (min > curr){
+				min = curr;
+				rightk = k;
+			}
+		}
+		array[i][j].min = min;
+		//fprintf(stderr,"correct k for subproblem [%i,%i] was %i\n",i,j,rightk);
+		vertex a;
+		if ((i-1) < (rightk-1)){
+			a.x = i-1;
+			a.y = rightk;
+			//cerr << "adding chord " << a.x << "," << a.y << endl;
+			array[i][j].chord.insert(a);
+		}
+		if (rightk < (j-1)){
+			a.x = rightk;
+			a.y = j;
+			//cerr << "adding chord " << a.x << "," << a.y << endl;
+			array[i][j].chord.insert(a);
+		}
+		if (((i-1) < (j-1)) and (((i-1) != 0) and (j != polygon->size()-1))) {
+			a.x = i-1;
+			a.y = j;
+			//cerr << "adding chord " << a.x << "," << a.y << endl;
+			array[i][j].chord.insert(a);
+		}
+		//cerr << "appending chords\n";
+		array[i][j].chord.insert(array[i][rightk].chord.begin(),array[i][rightk].chord.end());
+		array[i][j].chord.insert(array[rightk+1][j].chord.begin(),array[rightk+1][j].chord.end());
+		//cerr << "done appending\n";
+		return min;
+	}
+
+}
+
+double weight(vertex* v1, vertex* v2, vertex* v3){
+
+	return sqrt(pow(v2->x-v1->x,2)+pow(v2->y-v1->y,2)) + sqrt(pow(v3->x-v2->x,2)+pow(v3->y-v2->y,2)) + sqrt(pow(v1->x-v3->x,2)+pow(v1->y-v3->y,2));
+
+}
+
+void readinput(vector <vertex>* polygon){
+
+	cerr << "reading file.\n";
+	ifstream myfile;
+	vertex point;
+	string line;
+	myfile.open("polygon2.txt");
+	if (myfile.is_open()){
+		while (getline(myfile, line)){
+			istringstream in(line);
+			in >> point.x >> point.y;
+			polygon->push_back(point);
+		}		
+		myfile.close();
+		cerr << "finished ready file.\n";
+	}
+	else{
+		cerr << "Could not open file\n";
+	}
+}
+
+void outputpolygon(vector <vertex>* polygon){
+
+	cerr << "	Polygon is: \n";
+	for (vector<vertex>::iterator itr = polygon->begin(); itr != polygon->end(); ++itr){
+		cerr << "	" << itr->x << "  " << itr->y << endl;
+	}
+
+}

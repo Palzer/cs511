@@ -1,0 +1,43 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{amsfonts}
+\usepackage{fullpage}
+
+\begin{document}
+
+\textbf{CSCI 511 Analysis of Algorithms II \hfill Winter 2013 - Johnson}
+
+\begin{center}
+\textbf{David Palzer \\ Homework 1}
+\end{center}
+
+\begin{enumerate}
+
+
+\item Why is the master template not applicable to the following recurrence?
+
+T($n$) = 2T($\frac{n}{b}$) + $\frac{n}{lg(n)}$\\
+T(1) = K\\
+
+\textbf{Solution:} The master template is not applicable to this recurrence because the glue falls through the holes that it has. We can see that a = 2, and b = 2. Let us look at each of the three cases of the master theorem;\\\\Case a: For this case to hold true then our glue, which is $\frac{n}{lg(n)}$, must equal $O(n^{[log_{b}a]-\epsilon})$, $\epsilon > 0$. Substituting in $a$ and $b$ this becomes\\ $O(n^{[log_{2}2]-\epsilon}) = O(n^{1-\epsilon})$\\ Assuming that $\epsilon$ is small enough then this essentially implies that the upper bound must have, at most, slightly less than linear growth. Our glue though, has linear growth. As n grows larger the glue will over take the less than linear growth and so $O(n^{[log_{b}a]-\epsilon})$ is not a proper upper bound on the glue proving that case a does not fit.\\\\Case b: Our glue must be $\Theta(n^{log_{b}a})$. Again substiuting in a and b we see that the bound becomes $\Theta(n^{1}) = \Theta(n)$. This means that\\$\frac{n}{lg(n)} \geq \Omega(n)$\\$\frac{n}{lg(n)} \leq O(n)$.\\\\Let us look at the lower bound;\\$k_{1}n \leq \frac{n}{lg(n)} = k_{1}nlg(n) \leq n$\\Dropping the constant results in $nlg(n) \leq n$ which we can see is not true as $nlg(n)$ is greater than $n$, thus case b does not hold true.\\\\Case c: Our glue must be $\Omega(n^{log_{b}a+\epsilon})$. Again substituting a and b we see that the bound becomes $\Omega(n^{1+\epsilon})$. This means that\\$\frac{n}{lg(n)} \geq n^{1+\epsilon}$\\$n \geq n^{1+\epsilon}lg(n)$. \\Such as in case b, we can see that this is clearly false and so case c does not hold true.\\\\As none of the three cases hold true, this recurrence cannot be solved with the master theorem.
+
+\item Consider the following variation on case (b) of the master theorem.\\Let T($n) > 0$ be a nondecreasing function satisfying the following recurrence; let f($n$) $\geq$ 0.
+
+$T(n) = aT(\frac{n}{b}) + f(n)$, if $n \geq b$\\
+$T(n) \leq K$, for $1 \leq n < b$,\\
+where $a \geq 1, b > 1$, and $\frac{n}{b}$ can either be either $\lceil{\frac{n}{b}}\rceil$ or $\lfloor{\frac{n}{b}}\rfloor$. Further, suppose
+
+$f(n) = \theta(\frac{n^{log_{b}a}}{lg(n)})$.
+
+Then the recurrence solution is $T(n) = \theta(n^{log_{b}a}*lg(lg(n)))$.\\
+Prove this variation for the special case where $n=b^{k}$, for k = 0,1,2,...\\
+
+\textbf{Solution:} Taking the expanded recurrence from the proof of the master theorem we have\\\\$T(b^k)=a^kT(1)+\sum\limits_{j=0}^{k-1}a^jf(b^{k-j})=a^kT(1)+\sum\limits_{j=1}^ka^{k-j}f(b^j)$\\\\For this case we have $f(n)=\Theta(\frac{n^{log_ba}}{lg(n)})$. That is, $N,K_1,K_2$ with $n \geq N$ implies $K_1\frac{n^{log_ba}}{lg(n)} \leq f(n) \leq K_2\frac{n^{log_ba}}{lg(n)}$. We choose $k_1$ such that $b^{k_1} > N$. Consequently, $k \geq k_1$ implies $b^k \geq b^{k_1} > N$, which entails\\\\$K_1\frac{(b^k)^{log_ba}}{lg(b^k)} \leq f(b^k) \leq K_2\frac{(b^k)^{log_ba}}{lg(b^k)}$\\$K_1\frac{(b^{log_ba})^k}{lg(b^k)} \leq f(b^k) \leq k_2\frac{(b^{log_ba})^k}{lg(b^k)}$\\$K_1\frac{a^k}{lg(b^k)} \leq f(b^k) \leq K_2\frac{a^k}{lg(b^k)}$\\$K_1\frac{a^k}{klg(b)} \leq f(b^k) \leq K_2\frac{a^k}{klg(b)}$\\$\frac{K_1}{lg(b)}\frac{a^k}{k} \leq f(b^k) \leq \frac{K_2}{lg(b)}\frac{a^k}{k}$\\\\Breaking the above expansion into components for $1 \rightarrow k_1$ and $k_1+1 \rightarrow k$\\\\$T(b^k)=K_1a^k+\sum\limits_{j=1}^{k_1}a^{k-j}f(b^j)+\sum\limits_{j=k_1+1}^{k}a^{k-j}f(b^j)$\\\\for all $k \geq k_1$. We have written $T(1) = K_1$. All three components are positive so we obtain a simple lower bound by dropping all but the last:\\\\$T(b^k) \geq \sum\limits_{j=k_1+1}^{k}a^{k-j}f(b^j) \geq \sum\limits_{j=k_1+1}^{k}a^{k-j}\frac{K_1}{lg(b)}\frac{a^j}{j} \geq \frac{K_1a^k}{lg(b)}\sum\limits_{j=k_1+1}^{k}\frac{1}{j} \geq \frac{K_1a^k}{lg(b)}lg(k)$\\\\for $k > k_1$. In terms of $n = b^k$ this bound is\\\\$T(n)\geq a^{log_bn}*lg(log_bn) = n^{log_ba}*ln(\frac{ln(n)}{ln(b)}) = n^{log_ba}*(lnln(n) - lnln(b))\\ \geq n^{log_ba}*lnln(n)$\\\\for all $n = b^k, k \geq k_1$ therefore $T(n) = \Omega(n^{log_ba}*lnln(n))$ on the contrained sequence $n = b^k$\\\\%here is the upper bound
+For the matching upper bound we return to the expansion\\\\$T(b^k)=K_1a^k+\sum\limits_{j=1}^{k_1}a^{k-j}f(b^j)+\sum\limits_{j=k_1+1}^{k}a^{k-j}f(b^j)\\ = K_1a^k+a^k\sum\limits_{j=1}^{k_1}a^{-j}f(b^j)+\sum\limits_{j=k_1+1}^{k}a^{k-j}f(b^j)$\\\\for $k \geq k_1$ letting $K_3$ = max$_{1 \leq j \leq k_1}f(b^j)$ and noting $a^{-j}$ for $1 \leq j \leq k_1$, we have\\\\$T(b^k) \leq k_1a^k+a^k\sum\limits_{j=1}^{k_1}K_3+\sum\limits_{j=k_1+1}^{k}a^{k-j}f(b^j)=(K_1+k_1K_3)a^k+\sum\limits_{j=k_1+1}^{K}a^{k-j}f(b^j)$\\\\in the remaining sum we know $f(b^j) \leq \frac{K_2a^j}{jlg(b)}$\\\\$(K_1+k_1K_3)a^k+\sum\limits_{j=k_1+1}^{k}a^{k-j}\frac{K_2a^j}{jlg(b)} =(K_1+k_1K_3)a^k+\frac{K_2a^k}{lg(b)}\sum\limits_{j=k_1+1}^{k}\frac{1}{j}\\=(K_1+k_1K_3)a^k+\frac{K_2a^k}{lg(b)}2ln(k)=2(K_1+k_1K_3+\frac{K_2}{lg(b)})a^kln(k)$\\\\in terms of $n = b^k$ this result is\\\\$T(n) \leq 2(K_1+k_1K_3+\frac{K_2}{lg(b)})n^{log_ba}*lglg(n)$ for $n = b^k \geq b^{k_1}$\\Therefore $T(n) = O(n^{log_ba}*lglg(n))$ along the constrained sequence $n = b^k$.\\\\Combining both findings results in $T(n) = \Theta(N^{log_ba}*lglg(n))$
+
+\item Extend the preceding proff to the general case in which $n$ is not necessarily a power of b.\\
+
+\textbf{Solution:} We know that our recurrence, T(n), is a monotonically positive function. This means that it never decreases. From $n$ to $n+1$ the recurrence may or may not become larger but it will never become smaller. From this fact we can then glean that any $n$ picked between $b^j$ and $b^{j+1}$ must have an equal to or greater recurrence than $n$ at $b^j$ . Following this same logic we can see that this same $n$ must then have a recurrence smaller than or equal to the recurrence of $n$ at $b^{j+1}$. Since these are true then it must also hold that this can extend past $b^{j+1}$ to the point where $n$, $n_1 \leq n \leq n_2$ for any $n_1$, $n$, and $n_2$, must have a recurrence, $T(n_1) \leq T(n) \leq T(n_2)$, that fits this pattern no matter what $n$ is. This is only possible because of the monotonicity of the recurrence..
+
+\end{enumerate}
+\end{document}

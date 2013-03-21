@@ -1,0 +1,16 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{amsfonts}
+\usepackage{fullpage}
+
+\begin{document}
+
+\textbf{CSCI 511 Analysis of Algorithms II \hfill Winter 2013 - Johnson}
+
+\begin{center}
+\textbf{David Palzer \\ LUP Decomposition}
+\end{center}
+The algorithm that I have arrived at uses recursion to acheive an $\Theta(n)$ run time. If we pass by reference the Mx4 matrix holding the banded MxM matrix into the decomposition function we can perform a static number of operations to it to create the proper matrix to then pass down even further. At the first call we create the permutation matrix and if at any level we swap rows we then reflect this in the permutation matrix. The operations are static based on the fact that $t_{11}$, v, w$^{t}$ are all scalars and then since the matrix is banded the Schur Compliment has three operations to perform. This is true for every level of recursion. We end up recursing M-2 times or $\Theta(n)$ time complexity. At the lowest level, or base case, we construct the L and U matrices of 2Mx3 and 3Mx3 respectively. Since this operation only happens once it does not affect the $\theta(n)$ run time.\\\\
+There are operations such as expand matrix and other such things that can be used to check the answers but they have $\Theta(n)$ run time.
+
+\end{document}
